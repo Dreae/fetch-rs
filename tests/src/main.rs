@@ -6,6 +6,9 @@ extern crate fetch;
 extern crate serde_derive;
 extern crate serde;
 
+use stdweb::{Value, Reference};
+use stdweb::web::TypedArray;
+
 #[derive(Serialize, Deserialize)]
 #[allow(non_snake_case)]
 struct Post {
@@ -39,6 +42,12 @@ fn test_fetch() {
             console.log(@{res.text()});
         }
     });
+
+    fetch::post("http://jsonplaceholder.typicode.com/posts").body("Hello!").send(|res| {
+        js! {
+            console.log(@{res.text()});
+        }
+    })
 }
 
 fn run() {
@@ -49,8 +58,29 @@ fn run() {
     test_fetch();
 }
 
+#[derive(Serialize)]
+struct ReferenceHolder {
+    reference: Value
+}
+js_serializable!(ReferenceHolder);
+
+fn test_ref() {
+    let message = "Hello!".as_bytes();
+    let reference = Value::Reference(Reference::from(TypedArray::from(message)));
+    let obj = ReferenceHolder {
+        reference: Value::Reference(Reference::from(TypedArray::from(message)))
+    };
+
+    js! {
+        console.log(@{reference});
+        console.log(@{obj});
+    };
+}
+
 fn main() {
     stdweb::initialize();
+
+    test_ref();
 
     js! {
         Module.exports.run = @{run};

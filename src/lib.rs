@@ -45,22 +45,15 @@ impl HttpMethod {
 
 #[inline]
 pub fn fetch<F: FnMut(Response) + 'static>(request: Request, callback: F) {
+    let url = request.url().to_owned();
+    let (opts, body) = request.build_options();
     js! {
-        let opts = {
-            method: @{request.method.as_string()}
-        };
+        let url = @{url};
+        let opts = @{opts};
+        opts.body = @{body};
+        console.debug(opts);
 
-        let body = @{request.body};
-        if (body !== null) {
-            opts.body = body
-        }
-
-        let headers = @{request.headers};
-        if (headers !== null) {
-            opts.headers = headers;
-        }
-
-        fetch(@{request.url}, opts).then((res) => {
+        fetch(url, opts).then((res) => {
             let cb = @{callback};
             let rust_resp = {};
             rust_resp.ok = res.ok;
@@ -80,14 +73,13 @@ pub fn fetch<F: FnMut(Response) + 'static>(request: Request, callback: F) {
 }
 
 pub fn get<F: FnMut(Response) + 'static>(url: &str, callback: F) {
-    let request = Request::new(url.to_owned());
+    let request = Request::new(url.to_owned(), HttpMethod::GET);
 
     fetch(request, callback);
 }
 
 pub fn post(url: &str) -> Request {
-    let mut request = Request::new(url.to_owned());
-    request.method = HttpMethod::POST;
+    let request = Request::new(url.to_owned(), HttpMethod::POST);
 
     return request;
 }
