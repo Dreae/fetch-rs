@@ -1,0 +1,11 @@
+[package]
+name = "tests"
+version = "0.1.0"
+authors = ["Dreae <dreae@dreae.onl>"]
+
+[dependencies]
+fetch = { path = '../' }
+stdweb = "0.2.2"
+
+serde_derive = "1.0.26"
+serde = "1.0.26"
