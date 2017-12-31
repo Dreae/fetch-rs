@@ -10,6 +10,8 @@ use stdweb::web::TypedArray;
 use serde::ser::Serialize;
 use serde_json;
 use mediatypes;
+use super::FormData;
+use super::QueryString;
 
 pub enum RequestCredentials {
     Omit,
@@ -105,6 +107,20 @@ impl Request {
 
     pub fn text(mut self, body: String) -> Request {
         self.body = Some(Value::String(body));
+
+        self
+    }
+
+    pub fn form(mut self, body: QueryString) -> Request {
+        self.body = Some(body.into());
+        self.mediatype = mediatypes::APPLICATION_WWW_FORM_URLENCODED;
+
+        self
+    }
+
+    pub fn multipart_form(mut self, body: FormData) -> Request {
+        self.body = Some(body.into());
+        self.mediatype = mediatypes::MULTIPART_FORM_DATA;
 
         self
     }

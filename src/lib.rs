@@ -13,12 +13,16 @@ extern crate mime;
 mod response;
 mod status;
 mod request;
+mod formdata;
+mod querystring;
 
 pub mod mediatypes;
 
 pub use response::Response;
 pub use status::StatusCode;
 pub use request::{Request, RequestCredentials};
+pub use formdata::FormData;
+pub use querystring::QueryString;
 
 #[derive(PartialEq)]
 pub enum HttpMethod {

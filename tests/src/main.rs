@@ -9,6 +9,8 @@ extern crate serde;
 use stdweb::{Value, Reference};
 use stdweb::web::TypedArray;
 
+use fetch::QueryString;
+
 #[derive(Serialize, Deserialize)]
 #[allow(non_snake_case)]
 struct Post {
@@ -47,7 +49,15 @@ fn test_fetch() {
         js! {
             console.log(@{res.text()});
         }
-    })
+    });
+
+    let form_data = QueryString::new();
+    form_data.append("key", "test12");
+    fetch::post("http://jsonplaceholder.typicode.com/posts").form(form_data).send(|res| {
+        js! {
+            console.log(@{res.text()});
+        }
+    });
 }
 
 fn run() {
